@@ -1,8 +1,8 @@
 package org.example.quotations_delivery.service;
 
 import org.example.quotations_delivery.config.ChuckNorrisApiProperties;
+import org.example.quotations_delivery.error.RestException;
 import org.example.quotations_delivery.quote.ChuckNorris;
-import org.example.quotations_delivery.quote.DefaultQuotation;
 import org.example.quotations_delivery.quote.GenericQuotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,8 @@ public class ChuckNorrisService implements QuotationService {
     public GenericQuotation quotation() {
         try {
             return chuckNorrisQuotation();
-        } catch (Exception ex) {
-            return new DefaultQuotation();
+        } catch (IOException ex) {
+            throw new RestException(ex.getMessage());
         }
     }
 }

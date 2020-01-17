@@ -1,15 +1,19 @@
 package org.example.quotations_delivery.service;
 
 import org.example.quotations_delivery.config.ForismaticApiProperties;
-import org.example.quotations_delivery.quote.DefaultQuotation;
+import org.example.quotations_delivery.error.RestException;
 import org.example.quotations_delivery.quote.Forismatic;
 import org.example.quotations_delivery.quote.GenericQuotation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 
 @Service
 public class ForismaticService implements QuotationService {
@@ -20,19 +24,22 @@ public class ForismaticService implements QuotationService {
         this.apiProperties = apiProperties;
     }
 
-    public Forismatic forismaticQuote() throws IOException {
+    public ResponseEntity<Forismatic> forismaticQuote() throws IOException {
         RestTemplate restTemplate = apiProperties.getRestTemplate();
-        URI uri = apiProperties.getResource().getURI();
+        URL url = apiProperties.getResource().getURL();
 
-        return restTemplate.getForObject(uri, Forismatic.class);
+        return restTemplate.exchange(url.toString(),
+                HttpMethod.GET,
+                apiProperties.getHttpEntity(),
+                Forismatic.class);
     }
 
     @Override
     public GenericQuotation quotation() {
         try {
-            return forismaticQuote();
-        } catch (Exception ex) {
-            return new DefaultQuotation();
+            return forismaticQuote().getBody();
+        } catch (IOException ex) {
+            throw new RestException(ex.getMessage());
         }
     }
 }

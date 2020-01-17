@@ -1,4 +1,4 @@
-package org.example.quotations_delivery;
+package org.example.quotations_delivery.controller;
 
 import org.example.quotations_delivery.quote.GenericQuotation;
 import org.example.quotations_delivery.service.QuotationService;
